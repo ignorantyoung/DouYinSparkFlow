@@ -253,14 +253,13 @@ def do_user_task(browser, username, cookies, targets):
             page.wait_for_selector(chat_input_selector, timeout=config["browserTimeout"])
             chat_input = page.locator(chat_input_selector)
 
-            # Build and send message as one single message via clipboard paste
+            # Build and send message as one single message (headless-compatible)
             message = build_message()
             chat_input.click()
-            # 用剪贴板粘贴方式发送整条消息（避免换行被拆成多条）
-            page.evaluate("async (text) => { await navigator.clipboard.writeText(text); }", message)
-            chat_input.press("Control+v")
-            time.sleep(0.5)
+            page.keyboard.type(message)
+            time.sleep(0.3)
             chat_input.press("Enter")
+
 
             logger.debug(
                 f"账号 {username} 准备发送消息给好友 {username}：\n\t{message}"
