@@ -252,17 +252,7 @@ def do_user_task(browser, username, cookies, targets):
             chat_input_selector = "xpath=//div[contains(@class, 'chat-input-')]"
             page.wait_for_selector(chat_input_selector, timeout=config["browserTimeout"])
             chat_input = page.locator(chat_input_selector)
-            #旧代码 注释掉
-          
-# '''
-#             # 在 chat-input-dccKiL 中输入内容
-#             message = build_message()
-#             for line in message.split("\\n"):
-#                 chat_input.type(line)  # 输入每一行
-#                 # 如果不是最后一行，模拟 Shift+Enter 插入换行
-#                 if line != message.split("\\n")[-1]:
-#                     chat_input.press("Shift+Enter")  # 模拟 Shift+Enter 插入换行
-# '''
+
             # Build and send message as one single message via clipboard paste
             message = build_message()
             chat_input.click()
