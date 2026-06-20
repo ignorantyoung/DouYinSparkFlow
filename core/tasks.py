@@ -256,9 +256,28 @@ def do_user_task(browser, username, cookies, targets):
             # Build and send message as one single message (headless-compatible)
             message = build_message()
             chat_input.click()
-            page.keyboard.type(message)
+
+            # 用 JS 设置 innerHTML（<br> 换行），然后点发送按钮（避免 Enter 被拆成多条）
+            page.evaluate(
+                """([el, text]) => {
+                    el.innerHTML = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\\n/g, '<br>');
+                    el.dispatchEvent(new Event('input', {bubbles:true}));
+                }""",
+                [chat_input.element_handle(), message]
+            )
             time.sleep(0.3)
-            chat_input.press("Enter")
+            # 找发送按钮并点击（避免按 Enter 触发多段发送）
+            send_btn = page.locator("button:has-text('发送'), [class*='send'], [class*='Send']")
+            if send_btn.count() > 0:
+                send_btn.first.click()
+            else:
+                chat_input.press("Enter")  # 兜底
+
+            logger.debug(
+                f"Account {username} sending message to friend {username}:\n\t{message}"
+            )
+            logger.debug(f"Account {username} message sent to friend {username}")
+            time.sleep(2)  # Wait after sending
 
 
             logger.debug(
